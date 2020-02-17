@@ -1,6 +1,9 @@
 import express from 'express';
 import routes from './routes';
 
+// Loading classes (Sequelize)
+import './database';
+
 class App {
   constructor() {
     this.server = express();
