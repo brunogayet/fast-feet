@@ -3,3 +3,6 @@
 
 #debbuging
 /.vscode*
+
+#enviroment file
+.env

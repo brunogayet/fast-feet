@@ -1,0 +1,70 @@
+module.exports = {
+  up: (queryInterface, Sequelize) => {
+    return queryInterface.createTable('orders', {
+      id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+      },
+      recipient_id: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'recipients',
+          key: 'id',
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'NO ACTION',
+        allowNull: false,
+      },
+      delivery_man_id: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'delivery_men',
+          key: 'id',
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'NO ACTION',
+        allowNull: false,
+      },
+      signature_id: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'files',
+          key: 'id',
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'NO ACTION',
+        allowNull: true,
+      },
+      product: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
+      start_date: {
+        type: Sequelize.DATE,
+        allowNull: true,
+      },
+      end_date: {
+        type: Sequelize.DATE,
+        allowNull: true,
+      },
+      canceled_at: {
+        type: Sequelize.DATE,
+        allowNull: true,
+      },
+      created_at: {
+        type: Sequelize.DATE,
+        allowNull: false,
+      },
+      updated_at: {
+        type: Sequelize.DATE,
+        allowNull: false,
+      },
+    });
+  },
+
+  down: queryInterface => {
+    return queryInterface.dropTable('orders');
+  },
+};

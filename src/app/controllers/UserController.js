@@ -1,10 +1,11 @@
 import * as Yup from 'yup';
 
 import User from '../models/User';
+import File from '../models/File';
 
 class UserController {
   /**
-   * [Create] Users
+   * Create User
    */
   async store(req, res) {
     const schema = Yup.object().shape({
@@ -15,29 +16,45 @@ class UserController {
       password: Yup.string()
         .required()
         .min(6),
+      avatar_id: Yup.number(),
     });
 
     if (!(await schema.isValid(req.body))) {
       return res.status(400).json({ error: 'Validation fails' });
     }
 
-    const userExists = await User.findOne({ where: { email: req.body.email } });
+    const { email, avatar_id } = req.body;
+
+    const userExists = await User.findOne({ where: { email } });
 
     if (userExists) {
       return res.status(400).json({ error: 'User already exists.' });
     }
 
-    const { id, name, email } = await User.create(req.body);
+    // Checks if avatar was provided
+    if (avatar_id) {
+      const avatar = await File.findByPk(avatar_id);
+
+      // Checks if the avatar image exists
+      if (!avatar) {
+        return res
+          .status(400)
+          .json({ error: 'The avatar image does not exist' });
+      }
+    }
+
+    const { id, name } = await User.create(req.body);
 
     return res.json({
       id,
       name,
       email,
+      avatar_id,
     });
   }
 
   /**
-   * [Update] Users
+   * Update User
    */
   async update(req, res) {
     const schema = Yup.object().shape({
@@ -52,13 +69,14 @@ class UserController {
       confirmPassword: Yup.string().when('password', (password, field) =>
         password ? field.required().oneOf([Yup.ref('password')]) : field
       ),
+      avatar_id: Yup.number(),
     });
 
     if (!(await schema.isValid(req.body))) {
       return res.status(400).json({ error: 'Validation fails' });
     }
 
-    const { email, oldPassword } = req.body;
+    const { email, oldPassword, avatar_id } = req.body;
 
     const user = await User.findByPk(req.userId);
 
@@ -74,12 +92,25 @@ class UserController {
       return res.status(401).json({ error: 'Password does not match' });
     }
 
+    // Checks if avatar was provided
+    if (avatar_id) {
+      const avatar = await File.findByPk(avatar_id);
+
+      // Checks if the avatar image exists
+      if (!avatar) {
+        return res
+          .status(400)
+          .json({ error: 'The avatar image does not exist' });
+      }
+    }
+
     const { id, name } = await user.update(req.body);
 
     return res.json({
       id,
       name,
       email,
+      avatar_id,
     });
   }
 }

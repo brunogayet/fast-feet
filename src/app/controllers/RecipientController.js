@@ -4,7 +4,7 @@ import Recipient from '../models/Recipient';
 
 class RecipientController {
   /**
-   * [Create] Recipient
+   * Create Recipient
    */
   async store(req, res) {
     const schema = Yup.object().shape({
@@ -57,7 +57,7 @@ class RecipientController {
   }
 
   /**
-   * [Update] Recipient Route
+   * Update Recipient
    */
   async update(req, res) {
     const schema = Yup.object().shape({

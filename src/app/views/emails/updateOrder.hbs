@@ -1,0 +1,12 @@
+Hi, <strong>{{ delivery_man_name }}</strong>
+<p>The order number: <strong>{{ id }}</strong> has been updated. Check the details below:</p>
+<p>
+
+  <strong>Product:</strong> {{ product }} <br/>
+  <strong>Recipient:</strong> {{ address_street }}, {{ address_number}},
+  {{ address_postal_code }} - {{ address_city }}, {{ address_state }} <br/>
+</p>
+<small>
+  <strong>Important: </strong>You can only pick up your order from 8a.m to 6p.m<br/>
+  <i>Order created at: {{ created_at }}</i> and <i>updated at: {{ updated_at }}</i>
+</small>

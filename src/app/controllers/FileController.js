@@ -1,6 +1,9 @@
 import File from '../models/File';
 
 class FileController {
+  /**
+   * Create File
+   */
   async store(req, res) {
     const { originalname: name, filename: path } = req.file;
 
