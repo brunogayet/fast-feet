@@ -1,4 +1,5 @@
 import * as Yup from 'yup';
+import { Op } from 'sequelize';
 
 import DeliveryMan from '../models/DeliveryMan';
 import File from '../models/File';
@@ -8,16 +9,32 @@ class DeliveryManController {
    * List Delivery Men
    */
   async index(req, res) {
-    const deliveryMen = await DeliveryMan.findAll({
-      attributes: ['id', 'name', 'email'],
-      include: [
-        {
-          model: File,
-          as: 'avatar',
-          attributes: ['id', 'name', 'path', 'url'],
+    let where = {};
+
+    // If query parameter '?name=' is passed, then use iLike operator (case insensitive)
+    if (req.query.name) {
+      where = {
+        name: {
+          [Op.iLike]: `%${req.query.name}%`,
         },
-      ],
-    });
+      };
+    }
+
+    const deliveryMen = await DeliveryMan.findAll(
+      {
+        where,
+      },
+      {
+        attributes: ['id', 'name', 'email'],
+        include: [
+          {
+            model: File,
+            as: 'avatar',
+            attributes: ['id', 'name', 'path', 'url'],
+          },
+        ],
+      }
+    );
     return res.json(deliveryMen);
   }
 

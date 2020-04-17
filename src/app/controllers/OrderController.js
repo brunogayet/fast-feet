@@ -1,4 +1,5 @@
 import * as Yup from 'yup';
+import { Op } from 'sequelize';
 
 import Order from '../models/Order';
 import Recipient from '../models/Recipient';
@@ -14,35 +15,51 @@ import Queue from '../../lib/Queue';
 
 class OrderController {
   async index(req, res) {
-    const orders = await Order.findAll({
-      attributes: ['id', 'product', 'start_date', 'end_date', 'canceled_at'],
-      include: [
-        {
-          model: Recipient,
-          as: 'recipient',
-          attributes: [
-            'id',
-            'name',
-            'address_street',
-            'address_number',
-            'address_additional_details',
-            'address_city',
-            'address_state',
-            'address_postal_code',
-          ],
+    let where = {};
+
+    // If query parameter '?product=' is passed, then use iLike operator (case insensitive)
+    if (req.query.product) {
+      where = {
+        product: {
+          [Op.iLike]: `%${req.query.product}%`,
         },
-        {
-          model: DeliveryMan,
-          as: 'delivery_man',
-          attributes: ['id', 'name', 'email'],
-        },
-        {
-          model: File,
-          as: 'signature',
-          attributes: ['id', 'name', 'path', 'url'],
-        },
-      ],
-    });
+      };
+    }
+
+    const orders = await Order.findAll(
+      {
+        where,
+      },
+      {
+        attributes: ['id', 'product', 'start_date', 'end_date', 'canceled_at'],
+        include: [
+          {
+            model: Recipient,
+            as: 'recipient',
+            attributes: [
+              'id',
+              'name',
+              'address_street',
+              'address_number',
+              'address_additional_details',
+              'address_city',
+              'address_state',
+              'address_postal_code',
+            ],
+          },
+          {
+            model: DeliveryMan,
+            as: 'delivery_man',
+            attributes: ['id', 'name', 'email'],
+          },
+          {
+            model: File,
+            as: 'signature',
+            attributes: ['id', 'name', 'path', 'url'],
+          },
+        ],
+      }
+    );
     return res.json(orders);
   }
 

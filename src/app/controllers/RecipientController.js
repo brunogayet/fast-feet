@@ -1,8 +1,41 @@
 import * as Yup from 'yup';
+import { Op } from 'sequelize';
 
 import Recipient from '../models/Recipient';
 
 class RecipientController {
+  async index(req, res) {
+    let where = {};
+
+    // If query parameter '?product=' is passed, then use iLike operator (case insensitive)
+    if (req.query.name) {
+      where = {
+        name: {
+          [Op.iLike]: `%${req.query.name}%`,
+        },
+      };
+    }
+
+    const recipient = await Recipient.findAll(
+      {
+        where,
+      },
+      {
+        attributes: [
+          'id',
+          'name',
+          'address_street',
+          'address_number',
+          'address_additional_details',
+          'address_state',
+          'address_city',
+          'address_postal_code',
+        ],
+      }
+    );
+    return res.json(recipient);
+  }
+
   /**
    * Create Recipient
    */

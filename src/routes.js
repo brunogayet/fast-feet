@@ -43,6 +43,8 @@ routes.put('/users', UserController.update);
 /**
  * Recipient Routes
  */
+// [Index]
+routes.get('/recipients', RecipientController.index);
 // [Create]
 routes.post('/recipients', RecipientController.store);
 // [Update]
